@@ -184,6 +184,11 @@ export function useRunner({
     gasPriceFastGwei = parseUnits(gasPrice, 'gwei');
   }
 
+  const CXORelayABI = [
+    'function relayCall(address from, address recipient, bytes memory encodedFunction, uint256 nonce, bytes memory signature, uint256 reward, address rewardRecipient, bytes memory rewardSignature)',
+    'event TransactionRelayed(address indexed from, uint256 indexed nonce, bytes32 indexed encodedFunctionHash)',
+  ];
+
   function cancel() {
     shouldCancel.current = true;
   }
@@ -194,10 +199,18 @@ export function useRunner({
       return;
     }
 
+    const cxoRelay = new ethers.Contract(
+      '0xe957a692C97566EfC85f995162Fa404091232B2E',
+      CXORelayABI,
+      provider
+    );
+
+    const cxoRelayWithSigner = cxoRelay.connect(wallet);
+
     let fetchTimer: NodeJS.Timeout | null = null;
 
     async function fetchGasPrice() {
-      writeLog.info('Fetching gas price information...');
+      // writeLog.info('Fetching gas price information...');
 
       let gasUrl = '/gas/';
       if (relayUrl.endsWith('/')) {
@@ -206,7 +219,7 @@ export function useRunner({
 
       const gasPriceAPI = await getGasPrice(`${relayUrl}${gasUrl}`);
 
-      writeLog.info(`Gas Price: ${gasPriceAPI.result.SafeGasPrice}`);
+      writeLog.info(`Safe Gas: ${gasPriceAPI.result.SafeGasPrice}`);
 
       return parseUnits(gasPriceAPI.result.SafeGasPrice, 'gwei');
     }
@@ -257,6 +270,7 @@ export function useRunner({
           gasPriceGwei,
           gasPriceFastGwei,
           doffa,
+          cxoRelayWithSigner,
         });
         inProgress.current = false;
       }

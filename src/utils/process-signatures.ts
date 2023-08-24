@@ -12,6 +12,7 @@ type ProcessInput = {
   gasPriceGwei?: BigNumber;
   gasPriceFastGwei?: BigNumber;
   doffa?: boolean;
+  cxoRelayWithSigner: ethers.Contract;
 };
 
 type EthersError = {
@@ -27,6 +28,7 @@ export async function processSignatures({
   gasPriceGwei,
   gasPriceFastGwei,
   doffa,
+  cxoRelayWithSigner,
 }: ProcessInput) {
   if (!signatures) {
     writeLog.info('No signatures, canceling.');
@@ -70,12 +72,6 @@ export async function processSignatures({
       gas = gasPriceGwei;
     }
 
-    const cxoRelay = new ethers.Contract(
-      signature.relay_address,
-      CXORelayABI,
-      provider
-    );
-    const cxoRelayWithSigner = cxoRelay.connect(wallet);
     writeLog.info('Sending transaction...');
 
     const callOptions = {
@@ -117,11 +113,6 @@ export async function processSignatures({
 
   //writeLog.info('Done!');
 }
-
-const CXORelayABI = [
-  'function relayCall(address from, address recipient, bytes memory encodedFunction, uint256 nonce, bytes memory signature, uint256 reward, address rewardRecipient, bytes memory rewardSignature)',
-  'event TransactionRelayed(address indexed from, uint256 indexed nonce, bytes32 indexed encodedFunctionHash)',
-];
 
 function signatureOrder(sig1: SignatureDto, sig2: SignatureDto) {
   if (sig1.times_shown < sig2.times_shown) {
