@@ -56,7 +56,7 @@ export async function processSignatures({
       return;
     }
 
-    writeLog.info('------------------------------------------');
+    writeLog.info('----------------------------------------------------');
 
     let gas;
     if (!doffa && signature.times_shown > 0) {
@@ -84,6 +84,9 @@ export async function processSignatures({
     };
 
     try {
+      writeLog.info(
+        'Transaction gas: ' + (gas as unknown as number) / 1000000000
+      );
       const tx = await cxoRelayWithSigner.relayCall(
         signature.from,
         signature.recipient,
@@ -96,9 +99,6 @@ export async function processSignatures({
         callOptions
       );
       writeLog.info('Transaction hash: ' + (tx as Transaction).hash);
-      writeLog.info(
-        'Transaction gas: ' + (gas as unknown as number) / 1000000000
-      );
     } catch (e) {
       const error = e as EthersError;
       if (error.code == 'NETWORK_ERROR') {

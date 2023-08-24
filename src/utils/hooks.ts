@@ -84,7 +84,12 @@ export function useRpcProvider({ rpcAddress }: { rpcAddress: string }) {
     if (!rpcAddress) {
       return;
     }
-    const provider = new ethers.providers.JsonRpcProvider(rpcAddress);
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    const provider = new ethers.providers.JsonRpcProvider({
+      url: rpcAddress,
+      fetchOptions: { keepalive: true },
+    });
     setProvider(provider);
   }, [rpcAddress]);
   return provider;
@@ -170,7 +175,7 @@ export function useRunner({
   let gasPriceCapGwei = parseUnits('0', 'gwei');
 
   if (gasPriceCap === '') {
-    gasPriceCap = '0';
+    gasPriceCap = '1500';
   }
 
   gasPriceCapGwei = parseUnits(gasPriceCap, 'gwei');
