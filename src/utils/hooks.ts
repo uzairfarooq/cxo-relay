@@ -199,9 +199,9 @@ export function useRunner({
         try {
           const gasPriceAPI = await getGasPrice(`${relayUrl}${gasUrl}`);
 
-          writeLog.info(`Gas Price: ${gasPriceAPI.result.FastGasPrice}`);
+          writeLog.info(`Gas Price: ${gasPriceAPI.result.SafeGasPrice}`);
 
-          gasPriceGwei = parseUnits(gasPriceAPI.result.FastGasPrice, 'gwei');
+          gasPriceGwei = parseUnits(gasPriceAPI.result.SafeGasPrice, 'gwei');
         } catch {
           writeLog.info('Failed to fetch gas price information!');
 
@@ -215,6 +215,7 @@ export function useRunner({
 
       try {
         signatures = await getSignatures(relayUrl, rewardRecipient);
+        writeLog.info('Got signatures!');
       } catch (e) {
         writeLog.error(
           'Problem fetching signatures, please check your relay URL configuration: ' +
