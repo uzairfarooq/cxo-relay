@@ -165,8 +165,19 @@ export function useRunner({
   // Flag to "notify" the processSignatures function to stop processing
   const shouldCancel = React.useRef(false);
 
-  let gasPriceGwei = parseUnits('50', 'gwei');
+  let gasPriceGwei = parseUnits('90', 'gwei');
+  let gasPriceFastGwei = parseUnits('90', 'gwei');
   let gasPriceCapGwei = parseUnits('0', 'gwei');
+
+  if (gasPriceCap === '') {
+    gasPriceCap = '0';
+  }
+
+  gasPriceCapGwei = parseUnits(gasPriceCap, 'gwei');
+
+  if (gasPrice) {
+    gasPriceFastGwei = parseUnits(gasPrice, 'gwei');
+  }
 
   function cancel() {
     shouldCancel.current = true;
@@ -180,41 +191,26 @@ export function useRunner({
 
     let fetchTimer: NodeJS.Timeout | null = null;
 
-    // async function fetchGasPrice() {
-    //
-    // }
+    async function fetchGasPrice() {
+      writeLog.info('Fetching gas price information...');
+
+      let gasUrl = '/gas/';
+      if (relayUrl.endsWith('/')) {
+        gasUrl = 'gas/';
+      }
+
+      const gasPriceAPI = await getGasPrice(`${relayUrl}${gasUrl}`);
+
+      writeLog.info(`Gas Price: ${gasPriceAPI.result.SafeGasPrice}`);
+
+      return parseUnits(gasPriceAPI.result.SafeGasPrice, 'gwei');
+    }
+
+    async function updateGas() {
+      gasPriceGwei = await fetchGasPrice();
+    }
 
     async function fetchAndProcess() {
-      if (gasPriceCap === '') {
-        gasPriceCap = '0';
-      }
-
-      gasPriceCapGwei = parseUnits(gasPriceCap, 'gwei');
-
-      if (gasPrice) {
-        gasPriceGwei = parseUnits(gasPrice, 'gwei');
-      } else {
-        writeLog.info('Fetching gas price information...');
-
-        let gasUrl = '/gas/';
-        if (relayUrl.endsWith('/')) {
-          gasUrl = 'gas/';
-        }
-        try {
-          const gasPriceAPI = await getGasPrice(`${relayUrl}${gasUrl}`);
-
-          writeLog.info(`Gas Price: ${gasPriceAPI.result.SafeGasPrice}`);
-
-          gasPriceGwei = parseUnits(gasPriceAPI.result.SafeGasPrice, 'gwei');
-        } catch {
-          writeLog.info('Failed to fetch gas price information!');
-
-          // if we fail to fetch gas price, force pause
-          gasPriceGwei = parseUnits('0', 'gwei');
-          gasPriceCapGwei = parseUnits('1', 'gwei');
-        }
-      }
-
       let signatures: SignatureDto[] = [];
 
       try {
@@ -254,6 +250,7 @@ export function useRunner({
           writeLog,
           shouldCancel,
           gasPriceGwei,
+          gasPriceFastGwei,
           doffa,
         });
         inProgress.current = false;
@@ -262,9 +259,11 @@ export function useRunner({
       fetchTimer = setTimeout(fetchAndProcess, RELAY_REFRESH_INTERVAL_MS);
     }
 
+    setInterval(updateGas, 30 * 1000);
+
     // Setup interval and run immediately
     // const fetchTimer = setInterval(fetchAndProcess, RELAY_REFRESH_INTERVAL_MS);
-    fetchAndProcess();
+    updateGas().then(fetchAndProcess);
 
     writeLog.info('Started!');
 

@@ -10,6 +10,7 @@ type ProcessInput = {
   writeLog: LogsContextInterface['writeLog'];
   shouldCancel: React.MutableRefObject<boolean>;
   gasPriceGwei?: BigNumber;
+  gasPriceFastGwei?: BigNumber;
   doffa?: boolean;
 };
 
@@ -24,6 +25,7 @@ export async function processSignatures({
   writeLog,
   shouldCancel,
   gasPriceGwei,
+  gasPriceFastGwei,
   doffa,
 }: ProcessInput) {
   if (!signatures) {
@@ -54,12 +56,20 @@ export async function processSignatures({
       return;
     }
 
+    writeLog.info('------------------------------------------');
+
+    let gas;
     if (!doffa && signature.times_shown > 0) {
-      writeLog.info('Not skipping (free for all document) ' + signature.id);
+      writeLog.info(
+        'Processing signature (free for all document) ' + signature.id
+      );
+      gas = gasPriceFastGwei;
       //continue;
+    } else {
+      writeLog.info('Processing signature ' + signature.id);
+      gas = gasPriceGwei;
     }
 
-    writeLog.info('Processing signature ' + signature.id);
     const cxoRelay = new ethers.Contract(
       signature.relay_address,
       CXORelayABI,
@@ -69,8 +79,8 @@ export async function processSignatures({
     writeLog.info('Sending transaction...');
 
     const callOptions = {
-      maxFeePerGas: gasPriceGwei,
-      maxPriorityFeePerGas: gasPriceGwei,
+      maxFeePerGas: gas,
+      maxPriorityFeePerGas: gas,
     };
 
     try {
@@ -86,6 +96,9 @@ export async function processSignatures({
         callOptions
       );
       writeLog.info('Transaction hash: ' + (tx as Transaction).hash);
+      writeLog.info(
+        'Transaction gas: ' + (gas as unknown as number) / 1000000000
+      );
     } catch (e) {
       const error = e as EthersError;
       if (error.code == 'NETWORK_ERROR') {
