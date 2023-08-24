@@ -84,10 +84,10 @@ export function useRpcProvider({ rpcAddress }: { rpcAddress: string }) {
     if (!rpcAddress) {
       return;
     }
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
     const provider = new ethers.providers.JsonRpcProvider({
       url: rpcAddress,
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       fetchOptions: { keepalive: true },
     });
     setProvider(provider);
