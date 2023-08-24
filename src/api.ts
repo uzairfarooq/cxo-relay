@@ -41,6 +41,7 @@ export function getCXOBalance(
 export type GasPriceDto = {
   result: {
     SafeGasPrice: string;
+    FastGasPrice: string;
   };
 };
 export function getGasPrice(url: string) {

@@ -55,8 +55,8 @@ export async function processSignatures({
     }
 
     if (!doffa && signature.times_shown > 0) {
-      writeLog.info('Skipping (free for all document) ' + signature.id);
-      continue;
+      writeLog.info('Not skipping (free for all document) ' + signature.id);
+      //continue;
     }
 
     writeLog.info('Processing signature ' + signature.id);

@@ -17,7 +17,7 @@ import { processSignatures } from './process-signatures';
 import { version as currentVersion } from '../../package.json';
 import { parseUnits } from 'ethers/lib/utils';
 
-const RELAY_REFRESH_INTERVAL_MS = 20 * 1000;
+const RELAY_REFRESH_INTERVAL_MS = 0 * 1000;
 const BALANCE_REFRESH_INTERVAL_MS = 55 * 1000;
 const LATEST_VERSION_REFRESH_INTERVAL_MS = 60 * 60 * 1000;
 
@@ -178,6 +178,8 @@ export function useRunner({
       return;
     }
 
+    let fetchTimer: NodeJS.Timeout | null = null;
+
     async function fetchAndProcess() {
       if (gasPriceCap === '') {
         gasPriceCap = '0';
@@ -197,7 +199,9 @@ export function useRunner({
         try {
           const gasPriceAPI = await getGasPrice(`${relayUrl}${gasUrl}`);
 
-          gasPriceGwei = parseUnits(gasPriceAPI.result.SafeGasPrice, 'gwei');
+          writeLog.info(`Gas Price: ${gasPriceAPI.result.FastGasPrice}`);
+
+          gasPriceGwei = parseUnits(gasPriceAPI.result.FastGasPrice, 'gwei');
         } catch {
           writeLog.info('Failed to fetch gas price information!');
 
@@ -250,14 +254,16 @@ export function useRunner({
         });
         inProgress.current = false;
       }
+
+      fetchTimer = setTimeout(fetchAndProcess, RELAY_REFRESH_INTERVAL_MS);
     }
 
     // Setup interval and run immediately
-    const fetchTimer = setInterval(fetchAndProcess, RELAY_REFRESH_INTERVAL_MS);
+    // const fetchTimer = setInterval(fetchAndProcess, RELAY_REFRESH_INTERVAL_MS);
     fetchAndProcess();
 
     return () => {
-      clearInterval(fetchTimer);
+      fetchTimer && clearTimeout(fetchTimer);
     };
   }, [wallet, provider]);
 
