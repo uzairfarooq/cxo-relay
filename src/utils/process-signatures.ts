@@ -43,15 +43,15 @@ export async function processSignatures({
   // to increase the chance of relay success
   signatures.sort(signatureOrder);
 
-  for (const signature of signatures) {
-    if (shouldCancel.current) {
-      writeLog.info('Cancel requested');
-      return;
-    }
+  if (shouldCancel.current) {
+    writeLog.info('Cancel requested');
+    return;
+  }
 
+  const processSignature = async (signature: SignatureDto) => {
     if (RelayCache.wasAlreadyProcessed(signature.id)) {
-      writeLog.info('Skipping (already processed) ' + signature.id);
-      continue;
+      //writeLog.info('Skipping (already processed) ' + signature.id);
+      return;
     }
 
     if (!doffa && signature.times_shown > 0) {
@@ -92,14 +92,17 @@ export async function processSignatures({
         writeLog.error(
           'Problem connecting to the Polygon node, check your configuration or try again later'
         );
-        break;
+        return;
       }
       writeLog.error('Cannot relay: ' + extractErrorMessage(e));
     } finally {
       RelayCache.markAsProcessed(signature.id);
     }
-  }
-  writeLog.info('Done!');
+  };
+
+  await Promise.all(signatures.map(processSignature));
+
+  //writeLog.info('Done!');
 }
 
 const CXORelayABI = [

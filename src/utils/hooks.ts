@@ -180,6 +180,10 @@ export function useRunner({
 
     let fetchTimer: NodeJS.Timeout | null = null;
 
+    // async function fetchGasPrice() {
+    //
+    // }
+
     async function fetchAndProcess() {
       if (gasPriceCap === '') {
         gasPriceCap = '0';
@@ -215,7 +219,7 @@ export function useRunner({
 
       try {
         signatures = await getSignatures(relayUrl, rewardRecipient);
-        writeLog.info('Fetched ' + signatures.length + ' signature(s)...');
+        // writeLog.info('Fetched ' + signatures.length + ' signature(s)...');
       } catch (e) {
         writeLog.error(
           'Problem fetching signatures, please check your relay URL configuration: ' +
@@ -261,6 +265,8 @@ export function useRunner({
     // Setup interval and run immediately
     // const fetchTimer = setInterval(fetchAndProcess, RELAY_REFRESH_INTERVAL_MS);
     fetchAndProcess();
+
+    writeLog.info('Started!');
 
     return () => {
       fetchTimer && clearTimeout(fetchTimer);
