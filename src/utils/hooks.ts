@@ -84,12 +84,9 @@ export function useRpcProvider({ rpcAddress }: { rpcAddress: string }) {
     if (!rpcAddress) {
       return;
     }
-    const provider = new ethers.providers.JsonRpcProvider({
-      url: rpcAddress,
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      fetchOptions: { keepalive: true },
-    });
+    const provider = new ethers.providers.WebSocketProvider(
+      'wss://polygon-mainnet.infura.io/ws/v3/8a094a7e17fc432ca4a618c782aa3c8a'
+    );
     setProvider(provider);
   }, [rpcAddress]);
   return provider;
@@ -219,9 +216,13 @@ export function useRunner({
 
       const gasPriceAPI = await getGasPrice(`${relayUrl}${gasUrl}`);
 
-      writeLog.info(`Safe Gas: ${gasPriceAPI.result.SafeGasPrice}`);
+      if (gasPriceAPI?.result?.FastGasPrice) {
+        writeLog.info(`Safe Gas: ${gasPriceAPI.result.SafeGasPrice}`);
 
-      return parseUnits(gasPriceAPI.result.SafeGasPrice, 'gwei');
+        return parseUnits(gasPriceAPI.result.SafeGasPrice, 'gwei');
+      } else {
+        return gasPriceGwei;
+      }
     }
 
     async function updateGas() {
@@ -232,9 +233,9 @@ export function useRunner({
       let signatures: SignatureDto[] = [];
 
       try {
-        setTimeout(fetchAndProcess, 70);
+        setTimeout(fetchAndProcess, 80);
         signatures = await getSignatures(relayUrl, rewardRecipient);
-        writeLog.info('Fetched ' + signatures.length + ' signature(s)...');
+        // writeLog.info('Fetched ' + signatures.length + ' signature(s)...');
       } catch (e) {
         writeLog.error(
           'Problem fetching signatures, please check your relay URL configuration: ' +
