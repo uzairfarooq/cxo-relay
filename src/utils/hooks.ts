@@ -241,7 +241,7 @@ export function useRunner({
           }
 
           // writeLog.info(`Fast Gas: ${fastGasPrice}`);
-          gasPriceFastGwei = parseUnits(fastGasPrice + '', 'gwei');
+          gasPriceFastGwei = parseUnits(fastGasPrice.toFixed(2), 'gwei');
         }
       }
     }
