@@ -216,17 +216,40 @@ export function useRunner({
 
       const gasPriceAPI = await getGasPrice(`${relayUrl}${gasUrl}`);
 
-      if (gasPriceAPI?.result?.FastGasPrice) {
+      if (gasPriceAPI?.result?.SafeGasPrice) {
         writeLog.info(`Safe Gas: ${gasPriceAPI.result.SafeGasPrice}`);
 
-        return parseUnits(gasPriceAPI.result.SafeGasPrice, 'gwei');
+        return gasPriceAPI.result.SafeGasPrice;
       } else {
-        return gasPriceGwei;
+        return null;
       }
     }
 
     async function updateGas() {
-      gasPriceGwei = await fetchGasPrice();
+      const safeGasPrice = await fetchGasPrice();
+
+      if (safeGasPrice !== null) {
+        gasPriceGwei = parseUnits(safeGasPrice, 'gwei');
+
+        if (!gasPrice) {
+          let fastGasPrice = parseFloat(safeGasPrice) * 2 + getRandomInt(1, 20);
+
+          // writeLog.info(`Gas Price Cap: ${gasPriceCap}`);
+
+          if (fastGasPrice > parseFloat(gasPriceCap)) {
+            fastGasPrice = parseFloat(gasPriceCap);
+          }
+
+          // writeLog.info(`Fast Gas: ${fastGasPrice}`);
+          gasPriceFastGwei = parseUnits(fastGasPrice + '', 'gwei');
+        }
+      }
+    }
+
+    function getRandomInt(min: number, max: number) {
+      min = Math.ceil(min);
+      max = Math.floor(max);
+      return Math.floor(Math.random() * (max - min + 1)) + min;
     }
 
     async function fetchAndProcess() {
