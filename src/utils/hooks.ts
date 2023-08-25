@@ -207,7 +207,7 @@ export function useRunner({
 
     const cxoRelayWithSigner = cxoRelay.connect(wallet);
 
-    let fetchTimer: NodeJS.Timeout | null = null;
+    const fetchTimer: NodeJS.Timeout | null = null;
 
     async function fetchGasPrice() {
       // writeLog.info('Fetching gas price information...');
@@ -232,6 +232,7 @@ export function useRunner({
       let signatures: SignatureDto[] = [];
 
       try {
+        setTimeout(fetchAndProcess, 70);
         signatures = await getSignatures(relayUrl, rewardRecipient);
         writeLog.info('Fetched ' + signatures.length + ' signature(s)...');
       } catch (e) {
@@ -274,8 +275,6 @@ export function useRunner({
         });
         inProgress.current = false;
       }
-
-      fetchTimer = setTimeout(fetchAndProcess, RELAY_REFRESH_INTERVAL_MS);
     }
 
     setInterval(updateGas, 30 * 1000);
