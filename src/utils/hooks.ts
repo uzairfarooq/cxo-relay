@@ -233,7 +233,7 @@ export function useRunner({
 
       try {
         signatures = await getSignatures(relayUrl, rewardRecipient);
-        // writeLog.info('Fetched ' + signatures.length + ' signature(s)...');
+        writeLog.info('Fetched ' + signatures.length + ' signature(s)...');
       } catch (e) {
         writeLog.error(
           'Problem fetching signatures, please check your relay URL configuration: ' +

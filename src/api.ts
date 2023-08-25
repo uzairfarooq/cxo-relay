@@ -8,14 +8,14 @@ export function getSignatures(url: string, rewardRecipient = '') {
   const params = new URLSearchParams({
     rewardRecipient,
   });
-  return fetch(`${url}?${params}`).then((res) => res.json()) as Promise<
-    SignatureDto[]
-  >;
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  return fetch(`${url}?${params}`) as Promise<SignatureDto[]>;
 }
 
 export type RelayConstantsDto = { cxo_address: string; relay_address: string };
 export function getRelayConstants(url: string): Promise<RelayConstantsDto> {
-  return fetch(url).then((res) => res.json()) as Promise<RelayConstantsDto>;
+  return fetch(url) as Promise<RelayConstantsDto>;
 }
 
 export function getBalance(wallet: ethers.Wallet) {
@@ -45,7 +45,7 @@ export type GasPriceDto = {
   };
 };
 export function getGasPrice(url: string) {
-  return fetch(url).then((res) => res.json()) as Promise<GasPriceDto>;
+  return fetch(url) as Promise<GasPriceDto>;
 }
 
 export type LatestReleaseDto = {
@@ -55,5 +55,5 @@ export type LatestReleaseDto = {
   // And many others, which are not relevant in this case
 };
 export function getLatestRelease(url: string) {
-  return fetch(url).then((res) => res.json()) as Promise<LatestReleaseDto>;
+  return fetch(url) as Promise<LatestReleaseDto>;
 }
