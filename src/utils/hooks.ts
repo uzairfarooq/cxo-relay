@@ -84,15 +84,15 @@ export function useRpcProvider({ rpcAddress }: { rpcAddress: string }) {
     if (!rpcAddress) {
       return;
     }
-    // const provider = new ethers.providers.JsonRpcProvider({
-    //   url: rpcAddress,
-    //   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    //   // @ts-ignore
-    //   fetchOptions: { keepalive: true },
-    // });
-    const provider = new ethers.providers.WebSocketProvider(
-      'wss://polygon-mainnet.g.alchemy.com/v2/-GUuxvPV542mKE7EwF366EhtkKXgWPNt'
-    );
+    const provider = new ethers.providers.JsonRpcProvider({
+      url: rpcAddress,
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      fetchOptions: { keepalive: true },
+    });
+    // const provider = new ethers.providers.WebSocketProvider(
+    //   'wss://polygon-mainnet.g.alchemy.com/v2/-GUuxvPV542mKE7EwF366EhtkKXgWPNt'
+    // );
     setProvider(provider);
   }, [rpcAddress]);
   return provider;
