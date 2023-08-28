@@ -77,7 +77,7 @@ export async function processSignatures({
     const callOptions = {
       maxFeePerGas: gas,
       maxPriorityFeePerGas: gas,
-      gasLimit: gas,
+      //gasLimit: gas,
     };
 
     try {
