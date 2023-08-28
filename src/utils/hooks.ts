@@ -84,12 +84,10 @@ export function useRpcProvider({ rpcAddress }: { rpcAddress: string }) {
     if (!rpcAddress) {
       return;
     }
-    const provider = new ethers.providers.JsonRpcProvider({
-      url: rpcAddress,
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      fetchOptions: { keepalive: true },
-    });
+    const provider = new ethers.providers.InfuraProvider(
+      'polygon',
+      '8a094a7e17fc432ca4a618c782aa3c8a'
+    );
     // const provider = new ethers.providers.WebSocketProvider(
     //   'wss://polygon-mainnet.infura.io/ws/v3/8a094a7e17fc432ca4a618c782aa3c8a'
     // );
