@@ -238,7 +238,8 @@ export function useRunner({
         gasPriceGwei = parseUnits(safeGasPrice, 'gwei');
 
         if (!gasPrice) {
-          let fastGasPrice = parseFloat(safeGasPrice) * 2 + getRandomInt(1, 20);
+          let fastGasPrice =
+            parseFloat(safeGasPrice) * 11 + getRandomInt(1, 20);
 
           // writeLog.info(`Gas Price Cap: ${gasPriceCap}`);
 
