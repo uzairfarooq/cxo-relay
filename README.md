@@ -52,3 +52,8 @@ cd cxo-relay/
 yarn build-cli
 yarn add global file:$PWD
 ```
+
+## Restarting service on Amazon Linux AMI
+```angular2html
+sudo systemctl restart relayer.service
+```
