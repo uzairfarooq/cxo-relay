@@ -178,7 +178,7 @@ export function useRunner({
   let gasPriceCapGwei = parseUnits('0', 'gwei');
 
   if (gasPriceCap === '') {
-    gasPriceCap = '1500';
+    gasPriceCap = '600';
   }
 
   gasPriceCapGwei = parseUnits(gasPriceCap, 'gwei');
