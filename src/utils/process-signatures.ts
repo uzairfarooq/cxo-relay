@@ -66,7 +66,7 @@ export async function processSignatures({
         'Processing signature (free for all document) ' + signature.id
       );
       gas = gasPriceFastGwei;
-      //continue;
+      // return;
     } else {
       writeLog.info('Processing signature ' + signature.id);
       gas = gasPriceGwei;

@@ -312,7 +312,7 @@ export function useRunner({
 
     // Setup interval and run immediately
     // const fetchTimer = setInterval(fetchAndProcess, RELAY_REFRESH_INTERVAL_MS);
-    updateGas().then(fetchAndProcess);
+    process.nextTick(fetchAndProcess);
 
     writeLog.info('Started!');
 
