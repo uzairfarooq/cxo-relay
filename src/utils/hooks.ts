@@ -17,7 +17,7 @@ import { processSignatures } from './process-signatures';
 import { version as currentVersion } from '../../package.json';
 import { parseUnits } from 'ethers/lib/utils';
 
-const RELAY_REFRESH_INTERVAL_MS = 0 * 1000;
+const RELAY_REFRESH_INTERVAL_MS = 20 * 1000;
 const BALANCE_REFRESH_INTERVAL_MS = 55 * 1000;
 const LATEST_VERSION_REFRESH_INTERVAL_MS = 60 * 60 * 1000;
 
@@ -262,7 +262,7 @@ export function useRunner({
       let signatures: SignatureDto[] = [];
 
       try {
-        setTimeout(fetchAndProcess, 80);
+        setTimeout(fetchAndProcess, RELAY_REFRESH_INTERVAL_MS);
         signatures = await getSignatures(relayUrl, rewardRecipient);
         // writeLog.info('Fetched ' + signatures.length + ' signature(s)...');
       } catch (e) {
@@ -307,10 +307,10 @@ export function useRunner({
       }
     }
 
-    setInterval(updateGas, 30 * 1000);
+    setInterval(updateGas, 20 * 1000);
 
     // Setup interval and run immediately
-    // const fetchTimer = setInterval(fetchAndProcess, RELAY_REFRESH_INTERVAL_MS);
+    //fetchTimer = setInterval(fetchAndProcess, RELAY_REFRESH_INTERVAL_MS);
     process.nextTick(fetchAndProcess);
 
     writeLog.info('Started!');
