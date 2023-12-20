@@ -165,6 +165,8 @@ export function useRunner({
   gasPriceCap,
   doffa,
 }: RunnerInput) {
+  let writeGasLog = true;
+
   const { writeLog } = useLogs();
 
   // We track via this ref if we are processing at the moment
@@ -282,9 +284,17 @@ export function useRunner({
         gasPriceCap !== '0' &&
         gasPriceGwei.gte(gasPriceCapGwei)
       ) {
-        writeLog.info(
-          'Gas price is higher than gas price cap. Relaying is paused. '
-        );
+        if (writeGasLog) {
+          writeLog.info(
+            'Gas price is higher than gas price cap. Relaying is paused. '
+          );
+
+          writeGasLog = false;
+
+          setTimeout(() => {
+            writeGasLog = true;
+          }, 30 * 1000);
+        }
 
         return;
       }
