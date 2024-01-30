@@ -63,10 +63,10 @@ export async function processSignatures({
     let gas;
     if (!doffa && signature.times_shown > 0) {
       writeLog.info(
-        'Processing signature (free for all document) ' + signature.id
+        'Not Processing signature (free for all document) ' + signature.id
       );
       gas = gasPriceFastGwei;
-      // return;
+      return;
     } else {
       writeLog.info('Processing signature ' + signature.id);
       gas = gasPriceGwei;
